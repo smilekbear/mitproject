@@ -1,5 +1,6 @@
 package top.defaults.cameraapp;
 
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -7,8 +8,11 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,22 +44,32 @@ import top.defaults.view.TextButton;
 
 public class PhotographerActivity extends AppCompatActivity {
 
+    public int i = 0;
+    public int j = 0;
     Photographer photographer;
     PhotographerHelper photographerHelper;
     private boolean isRecordingVideo;
-
+    private boolean isPicture = false;
     @BindView(R.id.preview) CameraView preview;
     @BindView(R.id.status) TextView statusTextView;
 
     @BindView(R.id.chooseSize) TextButton chooseSizeButton;
     @BindView(R.id.flash) TextButton flashTextButton;
     @BindView(R.id.flash_torch) ImageButton flashTorch;
+    @BindView(R.id.tripodcontrol) TextButton tripodcontrol;
+    @BindView(R.id.moremenu)
+    ImageView moremenu;
+    @BindView(R.id.submenu)
+    LinearLayout submenu;
 
     @BindView(R.id.switch_mode) TextButton switchButton;
     @BindView(R.id.action) ImageButton actionButton;
     @BindView(R.id.flip) ImageButton flipButton;
 
     @BindView(R.id.zoomValue) TextView zoomValueTextView;
+
+
+
 
     private int currentFlash = Values.FLASH_AUTO;
 
@@ -155,6 +169,7 @@ public class PhotographerActivity extends AppCompatActivity {
         photographer.setFlash(FLASH_OPTIONS[currentFlash]);
     }
 
+
     @OnClick(R.id.action)
     void action() {
         int mode = photographer.getMode();
@@ -167,9 +182,17 @@ public class PhotographerActivity extends AppCompatActivity {
                 actionButton.setEnabled(false);
             }
         } else if (mode == Values.MODE_IMAGE) {
-            photographer.takePicture();
+            if(isPicture){
+                photographer.takePicture();
+            }else{
+                isPicture = true;
+
+            }
         }
     }
+
+
+
 
     @OnClick(R.id.flash_torch)
     void toggleFlashTorch() {
@@ -194,12 +217,67 @@ public class PhotographerActivity extends AppCompatActivity {
     void flip() {
         photographerHelper.flip();
     }
+    @OnClick(R.id.moremenu)
+    void moremenu(){
+        Log.d("i =",String.valueOf(i));
+        if( i == 0) {
+            i++;
+            submenu.setVisibility(View.VISIBLE);
+            moremenu.setImageResource(R.mipmap.left_arrow);
+            photographerHelper.moremenu();
+        }else{
+            i--;
+            submenu.setVisibility(View.GONE);
+            photographerHelper.moremenu();
+            moremenu.setImageResource(R.mipmap.right_arrow);
+        }
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_record);
         ButterKnife.bind(this);
+        ImageView rightup = findViewById(R.id.rightup);
+        ImageView up = findViewById(R.id.up);
+        ImageView leftup = findViewById(R.id.leftup);
+        ImageView right = findViewById(R.id.right);
+        ImageView down = findViewById(R.id.down);
+        ImageView left = findViewById(R.id.left);
+
+        submenu.setVisibility(View.GONE);
+
+        rightup.setVisibility(View.GONE);
+        right.setVisibility(View.GONE);
+        up.setVisibility(View.GONE);
+        leftup.setVisibility(View.GONE);
+        left.setVisibility(View.GONE);
+        down.setVisibility(View.GONE);
+
+        tripodcontrol.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if( j == 0) {
+                    j++;
+                    photographerHelper.moremenu();
+                    rightup.setVisibility(View.VISIBLE);
+                    right.setVisibility(View.VISIBLE);
+                    up.setVisibility(View.VISIBLE);
+                    leftup.setVisibility(View.VISIBLE);
+                    left.setVisibility(View.VISIBLE);
+                    down.setVisibility(View.VISIBLE);
+                }else {
+                    j--;
+                    photographerHelper.moremenu();
+                    rightup.setVisibility(View.GONE);
+                    right.setVisibility(View.GONE);
+                    up.setVisibility(View.GONE);
+                    leftup.setVisibility(View.GONE);
+                    left.setVisibility(View.GONE);
+                    down.setVisibility(View.GONE);
+                }
+            }
+        });
 
         preview.setFocusIndicatorDrawer(new CanvasDrawer() {
             private static final int SIZE = 300;
@@ -241,6 +319,8 @@ public class PhotographerActivity extends AppCompatActivity {
         photographer = PhotographerFactory.createPhotographerWithCamera2(this, preview);
         photographerHelper = new PhotographerHelper(photographer);
         photographerHelper.setFileDir(Commons.MEDIA_DIR);
+
+
         photographer.setOnEventListener(new SimpleOnEventListener() {
             @Override
             public void onDeviceConfigured() {
@@ -262,15 +342,28 @@ public class PhotographerActivity extends AppCompatActivity {
 
             @Override
             public void onStartRecording() {
-                switchButton.setVisibility(View.INVISIBLE);
-                flipButton.setVisibility(View.INVISIBLE);
+                switchButton.setVisibility(View.VISIBLE);
+                flipButton.setVisibility(View.VISIBLE);
                 actionButton.setEnabled(true);
                 actionButton.setImageResource(R.drawable.stop);
                 statusTextView.setVisibility(View.VISIBLE);
             }
+            @Override
+            public void onStartPicture() {
+                switchButton.setVisibility(View.INVISIBLE);
+                flipButton.setVisibility(View.INVISIBLE);
+                actionButton.setEnabled(true);
+                statusTextView.setVisibility(View.INVISIBLE);
+            }
+
 
             @Override
             public void onFinishRecording(String filePath) {
+                announcingNewFile(filePath);
+            }
+
+            @Override
+            public void onFinishPicture(String filePath) {
                 announcingNewFile(filePath);
             }
 

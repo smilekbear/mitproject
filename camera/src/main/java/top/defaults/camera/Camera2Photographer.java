@@ -100,6 +100,7 @@ public class Camera2Photographer implements InternalPhotographer {
     private String nextImageAbsolutePath;
     private String nextVideoAbsolutePath;
     private boolean isRecordingVideo;
+    private boolean isPicture;
 
     private static final ArrayList<String> RECORD_VIDEO_PERMISSIONS = new ArrayList<>(3);
 
@@ -800,6 +801,7 @@ public class Camera2Photographer implements InternalPhotographer {
             callbackHandler.onError(new Error(Error.ERROR_CAMERA));
             return;
         }
+
 
         try {
             nextVideoAbsolutePath = Utils.getVideoFilePath();

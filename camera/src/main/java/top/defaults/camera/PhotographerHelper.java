@@ -1,5 +1,7 @@
 package top.defaults.camera;
 
+import android.util.Log;
+
 public class PhotographerHelper {
 
     private Photographer photographer;
@@ -9,7 +11,9 @@ public class PhotographerHelper {
     }
 
     public void switchMode() {
-        int newMode = (photographer.getMode() == Values.MODE_IMAGE ? Values.MODE_VIDEO : Values.MODE_IMAGE);
+
+        int newMode = (photographer.getMode() == Values.MODE_IMAGE ? Values.MODE_IMAGE : Values.MODE_VIDEO);
+        Log.d("KDH Swith code :",String.valueOf(newMode));
         photographer.setMode(newMode);
     }
 
@@ -18,6 +22,12 @@ public class PhotographerHelper {
         photographer.setFacing(newFacing);
     }
 
+    public void moremenu(){
+
+    }
+    public void control(){
+
+    }
     public void setFileDir(String fileDir) {
         Utils.setFileDir(fileDir);
     }

@@ -27,7 +27,17 @@ public class SimpleOnEventListener implements Photographer.OnEventListener {
     }
 
     @Override
+    public void onStartPicture() {
+
+    }
+
+    @Override
     public void onFinishRecording(String filePath) {
+
+    }
+
+    @Override
+    public void onFinishPicture(String filePath) {
 
     }
 

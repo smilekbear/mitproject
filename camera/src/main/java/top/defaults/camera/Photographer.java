@@ -57,6 +57,7 @@ public interface Photographer {
 
     void startRecording(@Nullable MediaRecorderConfigurator configurator);
 
+
     /**
      * Only works when API level >= 24 (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N).
      */
@@ -119,6 +120,10 @@ public interface Photographer {
         void onPreviewStopped();
 
         void onStartRecording();
+
+        void onStartPicture();
+
+        void onFinishPicture(String filePathh);
 
         void onFinishRecording(String filePath);
 

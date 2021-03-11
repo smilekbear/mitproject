@@ -18,6 +18,9 @@ class CallbackHandler extends Handler {
     private static final int CALLBACK_ON_FINISH_RECORDING = 6;
     private static final int CALLBACK_ON_SHOT_FINISHED = 7;
     private static final int CALLBACK_ON_ERROR = 8;
+    private static final int CALLBACK_ON_START_PICTURE = 9;
+    private static final int CALLBACK_ON_FINISH_PICTURE = 10;
+
 
     private Photographer.OnEventListener onEventListener;
 
@@ -52,6 +55,12 @@ class CallbackHandler extends Handler {
                 break;
             case CALLBACK_ON_START_RECORDING:
                 onEventListener.onStartRecording();
+                break;
+            case CALLBACK_ON_START_PICTURE:
+                onEventListener.onStartPicture();
+                break;
+            case CALLBACK_ON_FINISH_PICTURE:
+                onEventListener.onFinishPicture((String) msg.obj);
                 break;
             case CALLBACK_ON_FINISH_RECORDING:
                 onEventListener.onFinishRecording((String) msg.obj);
@@ -89,6 +98,14 @@ class CallbackHandler extends Handler {
 
     void onFinishRecording(String filePath) {
         Message.obtain(this, CALLBACK_ON_FINISH_RECORDING, filePath).sendToTarget();
+    }
+
+    void onStartPicture() {
+        Message.obtain(this, CALLBACK_ON_START_PICTURE).sendToTarget();
+    }
+
+    void onFinishPicture(String filePath) {
+        Message.obtain(this, CALLBACK_ON_FINISH_PICTURE, filePath).sendToTarget();
     }
 
     void onShotFinished(String filePath) {
